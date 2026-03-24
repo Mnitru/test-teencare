@@ -13,3 +13,8 @@
 ```bash
 cd teenup-product-builder
 docker compose up --build
+
+giao diện
+http://localhost:3000/
+UI
+http://localhost:8000/docs
