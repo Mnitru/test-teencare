@@ -1,32 +1,33 @@
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session
-from ..database import get_db
-from ..crud import delete_registration
-from ..models import ClassRegistration, Class, Student
+from bson import ObjectId
+
+from app.database import get_db
 
 router = APIRouter(prefix="/api/registrations", tags=["registrations"])
 
-# GET danh sách tất cả đăng ký (để hiển thị trên UI)
 @router.get("/")
-def list_registrations(db: Session = Depends(get_db)):
-    regs = db.query(ClassRegistration).all()
-    result = []
-    for r in regs:
-        cls = db.query(Class).filter(Class.id == r.class_id).first()
-        stu = db.query(Student).filter(Student.id == r.student_id).first()
-        result.append({
-            "id": r.id,
-            "student_name": stu.name if stu else "Unknown",
-            "class_name": cls.name if cls else "Unknown",
-            "class_id": r.class_id,
-            "student_id": r.student_id
-        })
-    return result
+def list_registrations(db=Depends(get_db)):
+    results = []
 
-# DELETE hủy đăng ký
+    for reg in db.class_registrations.find():
+        cls = db.classes.find_one({"_id": ObjectId(reg["class_id"])})
+        stu = db.students.find_one({"_id": ObjectId(reg["student_id"])})
+
+        results.append({
+            "id": str(reg["_id"]),
+            "class_id": reg["class_id"],
+            "student_id": reg["student_id"],
+            "class_name": cls["name"] if cls else "Unknown",
+            "student_name": stu["name"] if stu else "Unknown"
+        })
+
+    return results
+
 @router.delete("/{id}")
-def cancel(id: int, db: Session = Depends(get_db)):
-    try:
-        return delete_registration(db, id)
-    except HTTPException as e:
-        raise e
+def cancel(id: str, db=Depends(get_db)):
+    reg = db.class_registrations.find_one({"_id": ObjectId(id)})
+    if not reg:
+        raise HTTPException(404, "Registration not found")
+
+    db.class_registrations.delete_one({"_id": ObjectId(id)})
+    return {"message": "Đã hủy đăng ký"}

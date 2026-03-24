@@ -1,7 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from .database import Base, engine
-from .routers import parents, students, classes, registrations, subscriptions
+from app.routers import parents, students, classes, registrations, subscriptions
 
 app = FastAPI(title="TeenUp Mini LMS")
 
