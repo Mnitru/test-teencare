@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  # ==================== MONGODB ====================
+  db:
+    image: mongo:7
+    container_name: teenup-mongo
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: password
+    volumes:
+      - mongo_data:/data/db
+
+  # ==================== BACKEND ====================
+  backend:
+    build:
+      context: ./backend    
+      dockerfile: Dockerfile
+    container_name: teenup-backend
+    ports:
+      - "8000:8000"
+    environment:
+      MONGO_URL: mongodb://root:password@db:27017/teenup?authSource=admin
+    depends_on:
+      - db
+
+  # ==================== FRONTEND ====================
+  frontend:
+    build: ./frontend
+    container_name: teenup-frontend
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+
+volumes:
+  mongo_data:
