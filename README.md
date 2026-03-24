@@ -25,21 +25,33 @@ docker --version
 # 2. Cấu trúc project (ví dụ)
 
 ```
-project-root/
-│
+teenup-product-builder/
 ├── backend/
-│   ├── main.py
-│   ├── models.py
-│   ├── database.py
-│   ├── requirements.txt
-│   └── Dockerfile
-│
+│   ├── app/
+│   │   ├── __init__.py
+│   │   ├── main.py
+│   │   ├── models.py
+│   │   ├── schemas.py
+│   │   ├── crud.py
+│   │   ├── database.py
+│   │   └── routers/
+│   │       ├── parents.py
+│   │       ├── students.py
+│   │       ├── classes.py
+│   │       ├── registrations.py
+│   │       └── subscriptions.py
+│   ├── Dockerfile
+│   └── requirements.txt
 ├── frontend/
 │   ├── src/
+│   │   ├── App.jsx
+│   │   ├── main.jsx
+│   ├── index.html
+│   ├── vite.config.js
 │   ├── package.json
 │   └── Dockerfile
-│
-└── docker-compose.yml
+├── docker-compose.yml
+└── README.md
 ```
 
 ---
